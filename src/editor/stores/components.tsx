@@ -19,7 +19,7 @@ interface Action {
   updateComponentProps: (componentId: number, props: unknown) => void;
 }
 
-export const useComponents = create<State & Action>(
+export const useComponentsStore = create<State & Action>(
   (set, get) => ({
     components: [
       {
@@ -43,10 +43,17 @@ export const useComponents = create<State & Action>(
       }
       return {components: [...state.components, component]}
     }),
-    deleteComponent: () => {
-
+    updateComponentProps: (componentId, props) => {
+      if (!componentId) {
+        return
+      }
+      const component = getComponentById(componentId, get().components)
+      if (component) {
+        component.props = {...component.props as Record<string, unknown>, ...props as Record<string, unknown>}
+        set({components: [...get().components]})
+      }
     },
-    updateComponentProps: (componentId) => {
+    deleteComponent: (componentId) => {
       if (!componentId) {
         return
       }
